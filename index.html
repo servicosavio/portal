@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Página de links para exercícios de informática">
+    <title>Aula de Informática - Links Úteis</title>
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --primary-hover: #45a049;
+            --background-color: #222;
+            --text-color: white;
+            --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 500px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .profile {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: fadeIn 1s ease;
+        }
+        
+        .profile img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+            border: 3px solid var(--primary-color);
+            box-shadow: var(--card-shadow);
+        }
+        
+        .profile h1 {
+            font-size: 28px;
+            margin: 10px 0;
+            color: var(--primary-color);
+        }
+        
+        .profile p {
+            font-size: 16px;
+            opacity: 0.8;
+        }
+        
+        .links {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary-color);
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 500;
+            transition: var(--transition);
+            box-shadow: var(--card-shadow);
+        }
+        
+        .links a:hover {
+            background: var(--primary-hover);
+            transform: translateY(-3px);
+        }
+        
+        .links a i {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 14px;
+            opacity: 0.7;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .profile h1 {
+                font-size: 24px;
+            }
+            
+            .links a {
+                padding: 12px 15px;
+                font-size: 16px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="profile">
+            <!-- Adicione uma imagem relevante se desejar -->
+            <!-- <img src="https://example.com/your-image.jpg" alt="Ícone de Informática"> -->
+            <h1>Aula de Informática</h1>
+            <p>Recursos e exercícios para prática</p>
+        </div>
+        
+        <div class="links">
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSfxIrthQYWQiUONnN2qxCoTxV6C6xlrcEV2_DTHjEtYIKHgiQ/viewform?usp=header" target="_blank" rel="noopener noreferrer">
+                <i class="fas fa-mouse"></i>Formulário 1
+            </a>
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSdHgc0x9wkMjycw-NWtddYZnLEA5bhz8L8fgwNTrYjhGc2c0Q/viewform?usp=header" target="_blank" rel="noopener noreferrer">
+                <i class="fas fa-keyboard"></i>Formulário 2
+            </a>
+        </div>
+        
+        <footer>
+            © 2023 Aula de Informática - Todos os direitos reservados
+        </footer>
+    </div>
+    
+    <script>
+        // Adicione scripts personalizados aqui
+        document.addEventListener('DOMContentLoaded', function() {
+            // Efeito de carregamento suave
+            const links = document.querySelectorAll('.links a');
+            links.forEach((link, index) => {
+                link.style.animationDelay = `${index * 0.1}s`;
+            });
+            
+            // Adicione mais interatividade se necessário
+        });
+    </script>
+</body>
+</html>
