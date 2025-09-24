@@ -42,7 +42,7 @@
   <div class="wrap">
     <header>
       <h1>Caça ao Tesouro no Teclado</h1>
-      <p class="lead">Siga as pistas e pressione as teclas solicitadas. Esta é a visão do aluno — sem painel do professor.</p>
+      <p class="lead">Siga as pistas e pressione as teclas solicitadas.</p>
     </header>
 
     <div class="stage" role="application" aria-live="polite">
@@ -66,26 +66,26 @@
 
 <script>
 const DEFAULT_SEQ = [
-  { "prompt": "Sou a primeira letra da palavra \"Abelha\" e a primeira de todo o alfabeto. Quem sou eu?", "expected": "A" },
-  { "prompt": "Estou no começo da \"Escola\" e no final do \"Pé\". Quem sou eu?", "expected": "E" },
-  { "prompt": "Sou a primeira letra da palavra \"Igreja\" e pareço um palitinho. Quem sou eu?", "expected": "I" },
-  { "prompt": "Tenho a forma de um círculo e estou no meio da palavra \"Bola\". Quem sou eu?", "expected": "O" },
-  { "prompt": "Sou a primeira letra da \"Uva\" e a última das vogais. Quem sou eu?", "expected": "U" },
-  { "prompt": "Sou uma letra especial com um rabinho, usada para escrever \"palhaço\" e \"maçã\". Quem sou eu?", "expected": "Ç" },
-  { "prompt": "Sou o número de sóis no nosso céu e o começo de toda contagem. Quem sou eu?", "expected": "1" },
-  { "prompt": "Sou o número de olhos que você tem para ler esta pergunta. Quem sou eu?", "expected": "2" },
-  { "prompt": "Sou o número de rodas de um triciclo. Quem sou eu?", "expected": "3" },
-  { "prompt": "Represento o número de dedos que você tem em uma mão. Quem sou eu?", "expected": "5" },
-  { "prompt": "Sozinho não valho muito, mas junto dos outros números eu posso valer bastante. Quem sou eu?", "expected": "0" },
-  { "prompt": "Se você digita uma letrinha errada, eu sou a tecla que apaga o que veio antes. Quem sou eu?", "expected": "Backspace" },
-  { "prompt": "Tenho uma seta para cima e te ajudo a fazer uma letra ficar maiúscula só por um instante. Quem sou eu?", "expected": "Shift" },
-  { "prompt": "Eu acendo uma luz no teclado e deixo TODAS AS LETRAS GRANDES até você me apertar de novo. Quem sou eu?", "expected": "Caps Lock" },
-  { "prompt": "Sou um conjunto de quatro irmãs com setas, que te ajudam a se mover para cima, para baixo, para a esquerda e para a direita. Quem somos nós?", "expected": "Teclas de Direção" },
-  { "prompt": "Sou a tecla que te ajuda a \"escapar\" de um vídeo em tela cheia ou de um jogo. Quem sou eu?", "expected": "Esc" },
-  { "prompt": "Apareço no final de toda pergunta, como esta. Quem sou eu?", "expected": "?" },
-  { "prompt": "Sou usado para mostrar uma grande alegria ou um susto! Quem sou eu?", "expected": "!" },
-  { "prompt": "Pareço um caracol e sou muito importante nos endereços de e-mail. Quem sou eu?", "expected": "@" },
-  { "prompt": "Sou um pontinho que mostra que a frase acabou. Quem sou eu?", "expected": "." }
+  { "prompt": "Pergunta 01", "expected": "A" },
+  { "prompt": "Pergunta 02", "expected": "E" },
+  { "prompt": "Pergunta 03", "expected": "I" },
+  { "prompt": "Pergunta 04", "expected": "O" },
+  { "prompt": "Pergunta 05", "expected": "U" },
+  { "prompt": "Pergunta 06", "expected": "Ç" },
+  { "prompt": "Pergunta 07", "expected": "1" },
+  { "prompt": "Pergunta 08", "expected": "2" },
+  { "prompt": "Pergunta 09", "expected": "3" },
+  { "prompt": "Pergunta 10", "expected": "5" },
+  { "prompt": "Pergunta 11", "expected": "0" },
+  { "prompt": "Pergunta 12", "expected": "Backspace" },
+  { "prompt": "Pergunta 13", "expected": "Shift" },
+  { "prompt": "Pergunta 14", "expected": "Caps Lock" },
+  { "prompt": "Pergunta 15", "expected": "Teclas de Direção" },
+  { "prompt": "Pergunta 16", "expected": "+" },
+  { "prompt": "Pergunta 17", "expected": "?" },
+  { "prompt": "Pergunta 18", "expected": "!" },
+  { "prompt": "Pergunta 19", "expected": "@" },
+  { "prompt": "Pergunta 20", "expected": "." }
 ];
 
 let sequence = DEFAULT_SEQ.slice();
