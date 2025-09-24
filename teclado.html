@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Caça ao Tesouro no Teclado — Aluno</title>
+<style>
+  :root{--bg:#000;--muted:#cfcfcf;--accent:#ffffff;--ok:#18c77f;--err:#ff5c5c}
+  html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;color:var(--accent);background:var(--bg)}
+  .wrap{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:48px 24px 80px}
+  header{max-width:1100px;width:100%;text-align:center;margin-top:18px}
+  h1{font-size:44px;letter-spacing:0.3px;margin:6px 0 8px;font-weight:800}
+  p.lead{color:var(--muted);margin:0 auto 28px;max-width:900px;font-size:18px}
+
+  .stage{display:flex;align-items:flex-start;justify-content:center;width:100%;max-width:1100px;margin-top:18px}
+
+  .board{width:520px;height:520px;min-width:300px;min-height:300px;border-radius:6px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));display:flex;align-items:center;justify-content:center;box-shadow:0 10px 50px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.04)}
+
+  .center-square{width:360px;height:360px;background:#ddd;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:translateY(0);transition:transform .22s ease, box-shadow .18s ease}
+  .center-square.waiting{background:#e6e6e6}
+  .center-square.ok{background:linear-gradient(180deg, #e6fff3, #d7fee8);box-shadow:0 8px 30px rgba(24,199,127,0.12);}
+  .center-square.err{background:linear-gradient(180deg,#ffe6e6,#ffdada);box-shadow:0 8px 30px rgba(255,92,92,0.12)}
+
+  .key-display{font-size:96px;font-weight:800;color:#111}
+  .instr{margin-top:10px;font-size:20px;color:#333;font-weight:700;text-align:center;padding:0 18px}
+
+  .progress{width:520px;max-width:80vw;height:12px;background:rgba(255,255,255,0.03);border-radius:999px;overflow:hidden;margin-top:18px}
+  .progress > i{display:block;height:100%;background:linear-gradient(90deg,#6b8cff,#4ba8ff);width:0%}
+
+  .footer-note{margin-top:18px;color:#999;font-size:13px}
+
+  /* counter bubble (bottom-right) */
+  .counter{
+    position:fixed;right:28px;bottom:28px;display:flex;align-items:center;justify-content:center;
+    width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.06);color:var(--accent);font-weight:800;font-size:18px;box-shadow:0 6px 18px rgba(0,0,0,0.6);
+  }
+
+  @media(max-width:700px){ .center-square{width:300px;height:300px}.key-display{font-size:72px} .counter{right:16px;bottom:16px;width:40px;height:40px;font-size:16px} }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Caça ao Tesouro no Teclado</h1>
+      <p class="lead">Siga as pistas e pressione as teclas solicitadas. Esta é a visão do aluno — sem painel do professor.</p>
+    </header>
+
+    <div class="stage" role="application" aria-live="polite">
+      <div class="board" id="board">
+        <div class="center-square waiting" id="center" title="Clique para reiniciar">
+          <div class="key-display" id="lastKey">—</div>
+          <div class="instr" id="prompt">Carregando sequência...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress" aria-hidden="true" title="Progresso">
+      <i id="progBar"></i>
+    </div>
+
+    <div class="footer-note">Dica: para teclas especiais, use nomes como <code>Space</code>, <code>Enter</code>, <code>ArrowUp</code>.</div>
+
+    <!-- contador no canto inferior direito -->
+    <div id="counter" class="counter" aria-hidden="true">0/0</div>
+  </div>
+
+<script>
+const DEFAULT_SEQ = [
+  { "prompt": "Sou a primeira letra da palavra \"Abelha\" e a primeira de todo o alfabeto. Quem sou eu?", "expected": "A" },
+  { "prompt": "Estou no começo da \"Escola\" e no final do \"Pé\". Quem sou eu?", "expected": "E" },
+  { "prompt": "Sou a primeira letra da palavra \"Igreja\" e pareço um palitinho. Quem sou eu?", "expected": "I" },
+  { "prompt": "Tenho a forma de um círculo e estou no meio da palavra \"Bola\". Quem sou eu?", "expected": "O" },
+  { "prompt": "Sou a primeira letra da \"Uva\" e a última das vogais. Quem sou eu?", "expected": "U" },
+  { "prompt": "Sou uma letra especial com um rabinho, usada para escrever \"palhaço\" e \"maçã\". Quem sou eu?", "expected": "Ç" },
+  { "prompt": "Sou o número de sóis no nosso céu e o começo de toda contagem. Quem sou eu?", "expected": "1" },
+  { "prompt": "Sou o número de olhos que você tem para ler esta pergunta. Quem sou eu?", "expected": "2" },
+  { "prompt": "Sou o número de rodas de um triciclo. Quem sou eu?", "expected": "3" },
+  { "prompt": "Represento o número de dedos que você tem em uma mão. Quem sou eu?", "expected": "5" },
+  { "prompt": "Sozinho não valho muito, mas junto dos outros números eu posso valer bastante. Quem sou eu?", "expected": "0" },
+  { "prompt": "Se você digita uma letrinha errada, eu sou a tecla que apaga o que veio antes. Quem sou eu?", "expected": "Backspace" },
+  { "prompt": "Tenho uma seta para cima e te ajudo a fazer uma letra ficar maiúscula só por um instante. Quem sou eu?", "expected": "Shift" },
+  { "prompt": "Eu acendo uma luz no teclado e deixo TODAS AS LETRAS GRANDES até você me apertar de novo. Quem sou eu?", "expected": "Caps Lock" },
+  { "prompt": "Sou um conjunto de quatro irmãs com setas, que te ajudam a se mover para cima, para baixo, para a esquerda e para a direita. Quem somos nós?", "expected": "Teclas de Direção" },
+  { "prompt": "Sou a tecla que te ajuda a \"escapar\" de um vídeo em tela cheia ou de um jogo. Quem sou eu?", "expected": "Esc" },
+  { "prompt": "Apareço no final de toda pergunta, como esta. Quem sou eu?", "expected": "?" },
+  { "prompt": "Sou usado para mostrar uma grande alegria ou um susto! Quem sou eu?", "expected": "!" },
+  { "prompt": "Pareço um caracol e sou muito importante nos endereços de e-mail. Quem sou eu?", "expected": "@" },
+  { "prompt": "Sou um pontinho que mostra que a frase acabou. Quem sou eu?", "expected": "." }
+];
+
+let sequence = DEFAULT_SEQ.slice();
+let index = 0;
+let attempts = 0;
+let history = [];
+let comboBuffer = [];
+
+const promptEl = document.getElementById('prompt');
+const lastKeyEl = document.getElementById('lastKey');
+const centerEl = document.getElementById('center');
+const progBar = document.getElementById('progBar');
+const counterEl = document.getElementById('counter');
+
+function normalizeKey(key){
+  if(!key) return '';
+  if(key === ' ') return 'Space';
+  if(key === 'Spacebar') return 'Space';
+  if(key.length === 1) return key.toLowerCase();
+  return key;
+}
+
+function humanKeyName(k){
+  if(!k) return '—';
+  if(k === ' ') return 'Space';
+  if(k.toLowerCase() === 'space') return 'Space';
+  const map = { 'enter':'Enter','shift':'Shift','control':'Control','alt':'Alt','tab':'Tab','backspace':'Backspace', 'arrowup':'ArrowUp','arrowdown':'ArrowDown','arrowleft':'ArrowLeft','arrowright':'ArrowRight' };
+  return map[k.toLowerCase()] || (k.length === 1 ? k.toUpperCase() : k);
+}
+
+function displayStep(){
+  attempts = 0; comboBuffer = [];
+  centerEl.classList.remove('ok','err'); centerEl.classList.add('waiting');
+  lastKeyEl.textContent = '—';
+  if(index >= sequence.length){ promptEl.textContent = '🎉 Sequência concluída! Parabéns!'; progBar.style.width = '100%'; updateCounter(); return; }
+  const step = sequence[index];
+  promptEl.textContent = step.prompt;
+  updateProgress();
+  updateCounter();
+}
+
+function updateProgress(){ const pct = sequence.length === 0 ? 0 : Math.round((index / sequence.length) * 100); progBar.style.width = pct + '%'; }
+
+function updateCounter(){
+  if(sequence.length === 0){ counterEl.textContent = '0/0'; return; }
+  const current = Math.min(index+1, sequence.length);
+  counterEl.textContent = `${current}/${sequence.length}`;
+}
+
+function handleKey(e){
+  if(sequence.length === 0 || index >= sequence.length) return;
+  e.preventDefault();
+  const rawKey = e.key;
+  const norm = normalizeKey(rawKey);
+  lastKeyEl.textContent = humanKeyName(norm);
+  attempts++;
+  const step = sequence[index];
+
+  // coerce expected to array (support strings from your JSON)
+  let expected = step.expected || [];
+  if(!Array.isArray(expected)) expected = [expected];
+  expected = expected.map(x => String(x));
+
+  // special case: if expected mentions 'Teclas de Direção' accept any Arrow key
+  const expectDirection = expected.some(x => String(x).toLowerCase().includes('teclas de dire'));
+  if(expectDirection){
+    if(norm.toLowerCase().startsWith('arrow') || (e.code || '').toLowerCase().startsWith('arrow')){ markOk(norm); return; }
+  }
+
+  // handle combos (if user provided array-of-arrays format)
+  const combos = expected.filter(x => Array.isArray(x)).map(c=>c.map(v=>String(v).toLowerCase()));
+  if(combos.length > 0){
+    comboBuffer.push(norm.toLowerCase());
+    const maxLen = Math.max(...combos.map(c=>c.length));
+    if(comboBuffer.length > maxLen) comboBuffer.shift();
+    let ok = false;
+    for(const c of combos){ if(comboBuffer.slice(-c.length).join(',') === c.join(',')) { ok = true; break; } }
+    if(ok) markOk(norm); else markErr(norm);
+    return;
+  }
+
+  // normal single-key matching (robust to spacing differences like 'Caps Lock' vs 'CapsLock')
+  const lowerExpected = expected.map(x => String(x).toLowerCase());
+  const compactExpected = lowerExpected.map(s => s.replace(/\s+/g,''));
+  const normCompact = norm.toLowerCase().replace(/\s+/g,'');
+  const codeCompact = (e.code || '').toLowerCase().replace(/\s+/g,'');
+  const match = lowerExpected.includes(norm.toLowerCase()) || compactExpected.includes(normCompact) || compactExpected.includes(codeCompact) || lowerExpected.includes((e.code || '').toLowerCase());
+  if(match) markOk(norm); else markErr(norm);
+}
+
+function markOk(norm){ centerEl.classList.remove('waiting'); centerEl.classList.add('ok'); history.push({step:index+1,key:norm,ok:true,tries:attempts}); index++; setTimeout(()=>displayStep(),600); }
+function markErr(norm){ centerEl.classList.remove('waiting'); centerEl.classList.add('err'); history.push({step:index+1,key:norm,ok:false,tries:attempts}); setTimeout(()=> centerEl.classList.remove('err'),450); }
+
+centerEl.addEventListener('click', ()=>{ if(confirm('Reiniciar a sequência?')){ index = 0; history = []; displayStep(); } });
+window.addEventListener('keydown', handleKey);
+
+function boot(){ index = 0; displayStep(); }
+boot();
+</script>
+</body>
+</html>
